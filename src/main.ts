@@ -1,7 +1,50 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, Notification } from "electron";
 import path from "node:path";
 import started from "electron-squirrel-startup";
 import nativeAPI from "./native/native-api";
+
+const SCHEME = "devchat";
+
+let mainWindow: BrowserWindow | null = null;
+let pendingDeepLink: string | undefined; // store until window ready
+
+function extractDeepLinkFromArgv(argv: string[]): string | undefined {
+  return argv.find(a => a.startsWith(`${SCHEME}://`));
+}
+
+function handleDeepLink(url: string) {
+  console.log("Deep link received:", url);
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    mainWindow.focus();
+    mainWindow.webContents.send("deep-link", url);
+  } else {
+    pendingDeepLink = url; // will be sent once window created
+  }
+}
+
+// Capture deep link on first instance launch (Windows/Linux). On macOS first link may come via open-url.
+const firstLaunchLink = extractDeepLinkFromArgv(process.argv);
+if (firstLaunchLink) {
+  pendingDeepLink = firstLaunchLink;
+}
+
+// Single instance lock must be acquired before setting up second-instance handling.
+const gotLock = app.requestSingleInstanceLock();
+if (!gotLock) {
+  app.quit();
+} else {
+  app.on("second-instance", (_event, argv) => {
+    const url = extractDeepLinkFromArgv(argv);
+    if (url) handleDeepLink(url);
+  });
+}
+
+// macOS deep link event
+app.on("open-url", (event, url) => {
+  event.preventDefault();
+  handleDeepLink(url);
+});
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -10,7 +53,7 @@ if (started) {
 
 const createWindow = () => {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },
@@ -27,7 +70,17 @@ const createWindow = () => {
 
   mainWindow.maximize();
 
-  // Open the DevTools.
+  mainWindow.on("closed", () => { mainWindow = null; });
+
+  // After first paint, deliver any pending deep link
+  mainWindow.webContents.once("did-finish-load", () => {
+    if (pendingDeepLink) {
+      mainWindow?.webContents.send("deep-link", pendingDeepLink);
+      pendingDeepLink = undefined;
+    }
+  });
+
+  // Open the DevTools (uncomment if needed)
   // mainWindow.webContents.openDevTools();
 };
 
@@ -36,6 +89,13 @@ const createWindow = () => {
 // Some APIs can only be used after this event occurs.
 app.on("ready", () => {
   Object.entries(nativeAPI).forEach(([key, val]) => ipcMain.handle(key, val));
+
+  // Register custom protocol (returns false if failed / already registered by another build)
+  const registered = process.defaultApp
+    ? app.setAsDefaultProtocolClient(SCHEME, process.execPath, [path.resolve(process.argv[1])])
+    : app.setAsDefaultProtocolClient(SCHEME);
+  console.log(`Protocol ${SCHEME} registration result:`, registered);
+
   createWindow();
 });
 
