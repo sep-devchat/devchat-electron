@@ -6,27 +6,48 @@ import nativeAPI from "./native/native-api";
 const SCHEME = "devchat";
 
 let mainWindow: BrowserWindow | null = null;
-let pendingDeepLink: string | undefined; // store until window ready
+
+interface DeepLinkPayload {
+  url: string;
+  code?: string;
+}
+
+let pendingDeepLink: DeepLinkPayload | undefined; // store until window ready
 
 function extractDeepLinkFromArgv(argv: string[]): string | undefined {
   return argv.find(a => a.startsWith(`${SCHEME}://`));
 }
 
+function parseDeepLink(url: string): DeepLinkPayload {
+  let code: string | undefined;
+  try {
+    const u = new URL(url);
+    if (u.protocol.replace(/:$/, "") === SCHEME) {
+      code = u.searchParams.get("code") ?? undefined;
+    }
+  } catch (err) {
+    console.warn("Failed to parse deep link", url, err);
+  }
+  return { url, code };
+}
+
 function handleDeepLink(url: string) {
-  console.log("Deep link received:", url);
+  const payload = parseDeepLink(url);
+  console.log("Deep link received:", payload);
   if (mainWindow) {
     if (mainWindow.isMinimized()) mainWindow.restore();
     mainWindow.focus();
-    mainWindow.webContents.send("deep-link", url);
+    // Send structured payload { url, code }
+    mainWindow.webContents.send("deep-link", payload);
   } else {
-    pendingDeepLink = url; // will be sent once window created
+    pendingDeepLink = payload; // will be sent once window created
   }
 }
 
 // Capture deep link on first instance launch (Windows/Linux). On macOS first link may come via open-url.
 const firstLaunchLink = extractDeepLinkFromArgv(process.argv);
 if (firstLaunchLink) {
-  pendingDeepLink = firstLaunchLink;
+  pendingDeepLink = parseDeepLink(firstLaunchLink);
 }
 
 // Single instance lock must be acquired before setting up second-instance handling.
@@ -75,7 +96,9 @@ const createWindow = () => {
   // After first paint, deliver any pending deep link
   mainWindow.webContents.once("did-finish-load", () => {
     if (pendingDeepLink) {
-      mainWindow?.webContents.send("deep-link", pendingDeepLink);
+      if (pendingDeepLink) {
+        mainWindow?.webContents.send("deep-link", pendingDeepLink);
+      }
       pendingDeepLink = undefined;
     }
   });
