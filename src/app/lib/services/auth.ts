@@ -1,4 +1,5 @@
-import { NATIVE_API_MAKE_HTTP_REQUEST } from "@/native/constants";
+import axios from "axios";
+import { ApiResponseDto } from "./types";
 
 interface PkceIssueTokenRequest {
     codeVerifier: string;
@@ -6,11 +7,19 @@ interface PkceIssueTokenRequest {
     authCode: string;
 }
 
-export async function pkceIssueToken(dto: PkceIssueTokenRequest) {
-    const response = await nativeAPI.invokeNativeAPI(NATIVE_API_MAKE_HTTP_REQUEST, {
-        url: "",
-        method: "post",
-        body: dto,
+interface TokenResponse {
+    accessToken: string;
+    refreshToken: string;
+}
 
-    })
+export async function pkceIssueToken(dto: PkceIssueTokenRequest) {
+    // const instance = nativeAPI.getAxiosInstance();
+    // console.log(instance);
+    const instance = axios.create();
+    const url = `https://api.devchat.online/api/auth/pkce-issue-token`
+    return await instance<ApiResponseDto<TokenResponse>>({
+        url: url,
+        method: "POST",
+        data: dto,
+    });
 }

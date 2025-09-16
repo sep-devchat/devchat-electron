@@ -1,5 +1,6 @@
 // See the Electron documentation for details on how to use preload scripts:
 
+import axios from "axios";
 import { contextBridge, ipcRenderer } from "electron";
 
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
@@ -10,4 +11,5 @@ contextBridge.exposeInMainWorld("nativeAPI", {
     ipcRenderer.on(channel, cb);
     return () => ipcRenderer.off(channel, cb);
   },
+  getAxiosInstance: () => axios.create()
 });
