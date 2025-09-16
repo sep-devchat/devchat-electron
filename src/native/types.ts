@@ -1,35 +1,46 @@
+import { AxiosResponse } from "axios";
 import { IpcMainInvokeEvent } from "electron";
+
+export interface AppSettings {
+  appBaseUrl: string;
+  apiBaseUrl: string;
+}
+
+export interface PaginationDto {
+    page: number;
+    take: number;
+    totalRecord: number;
+    totalPage: number;
+    nextPage?: number;
+    prevPage?: number;
+}
+
+export interface ApiResponseDto<T = any> {
+    message: string;
+    data: T;
+    pagination?: PaginationDto;
+}
+
+export interface ApiError<T = any> {
+    code: string;
+    message: string;
+    detail: T;
+    status?: number;
+}
+
+export interface MakeHttpRequestParams {
+  url: string;
+  method: string;
+  body: any;
+  headers?: Record<string, any>;
+}
+
+export interface MakeHttpRequestResult<T = any> {
+  response?: AxiosResponse<ApiResponseDto<T>>;
+  error?: any;
+}
 
 export type NativeAPIHandler = (
   event: IpcMainInvokeEvent,
   ...args: any[]
 ) => any;
-
-export interface MakeHttpRequestArgs {
-  url: string;
-  method?: string; // GET by default
-  headers?: Record<string, string>;
-  query?: Record<string, string | number | boolean | null | undefined>;
-  body?: any; // JSON serializable
-  timeoutMs?: number; // default 15000
-  responseType?: 'json' | 'text' | 'arraybuffer';
-}
-
-export interface MakeHttpRequestSuccess {
-  ok: true;
-  status: number;
-  statusText: string;
-  headers: Record<string, string>;
-  data: any;
-}
-
-export interface MakeHttpRequestError {
-  ok: false;
-  status?: number;
-  statusText?: string;
-  headers?: Record<string, string>;
-  error: string; // message
-  data?: any; // error response body if any
-}
-
-export type MakeHttpRequestResult = MakeHttpRequestSuccess | MakeHttpRequestError;

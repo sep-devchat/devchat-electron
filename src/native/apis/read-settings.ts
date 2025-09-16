@@ -1,10 +1,11 @@
-import { NativeAPIHandler } from "../types";
+import { AppSettings, NativeAPIHandler } from "../types";
 import * as fs from "fs";
 import * as path from "path";
 import { app } from "electron";
 
-const initSettingValues = {
-    geminiApiKey: ''
+const initSettingValues: AppSettings = {
+    appBaseUrl: 'https://devchat.online',
+    apiBaseUrl: 'https://api.devchat.online'
 };
 
 const readSettings: NativeAPIHandler = () => {

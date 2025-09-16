@@ -33,7 +33,7 @@ function parseDeepLink(url: string): DeepLinkPayload {
 
 function handleDeepLink(url: string) {
   const payload = parseDeepLink(url);
-  console.log("Deep link received:", payload);
+  // console.log("Deep link received:", payload);
   if (mainWindow) {
     if (mainWindow.isMinimized()) mainWindow.restore();
     mainWindow.focus();
@@ -78,6 +78,7 @@ const createWindow = () => {
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },
+    autoHideMenuBar: true
   });
 
   // and load the index.html of the app.
