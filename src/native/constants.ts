@@ -4,3 +4,6 @@ export const NATIVE_API_READ_SETTINGS = "nativeAPI:readSettings";
 export const NATIVE_API_SAVE_SETTINGS = "nativeAPI:saveSettings";
 export const NATIVE_API_OPEN_BROWSER_FOR_LOGIN = "nativeAPI:openBrowserForLogin";
 export const NATIVE_API_MAKE_HTTP_REQUEST = "nativeAPI:makeHttpRequest";
+
+// Authentication events
+export const NATIVE_API_FORGOT_PASSWORD = "nativeAPI:forgotPassword";

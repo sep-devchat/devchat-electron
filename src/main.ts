@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain, Notification } from "electron";
 import path from "node:path";
 import started from "electron-squirrel-startup";
 import nativeAPI from "./native/native-api";
+import { installExtension, REDUX_DEVTOOLS } from 'electron-devtools-installer';
 
 const SCHEME = "devchat";
 
@@ -104,7 +105,7 @@ const createWindow = () => {
   });
 
   // Open the DevTools (uncomment if needed)
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
 };
 
 // This method will be called when Electron has finished
