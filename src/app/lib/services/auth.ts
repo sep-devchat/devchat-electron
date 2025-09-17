@@ -10,7 +10,7 @@ interface TokenResponse {
 }
 
 export async function pkceIssueToken(dto: PkceIssueTokenRequest) {
-    const url = `https://api.devchat.online/api/auth/pkce-issue-token`
+    const url = `/api/auth/pkce-issue-token`
     const result = await nativeAPI.makeHttpRequest<TokenResponse>({
         url: url,
         method: "POST",
@@ -21,5 +21,5 @@ export async function pkceIssueToken(dto: PkceIssueTokenRequest) {
         throw result.error;
     }
 
-    return result.response!.data.data;
+    return result.response!.data;
 }

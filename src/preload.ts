@@ -1,8 +1,8 @@
 // See the Electron documentation for details on how to use preload scripts:
 
-import axios from "axios";
 import { contextBridge, ipcRenderer } from "electron";
-import makeHttpRequest from "./native/apis/make-http-request";
+import { MakeHttpRequestParams } from "./native/types";
+import { NATIVE_API_MAKE_HTTP_REQUEST } from "./native/constants";
 
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 contextBridge.exposeInMainWorld("nativeAPI", {
@@ -12,5 +12,5 @@ contextBridge.exposeInMainWorld("nativeAPI", {
     ipcRenderer.on(channel, cb);
     return () => ipcRenderer.off(channel, cb);
   },
-  makeHttpRequest,
+  makeHttpRequest: (params: MakeHttpRequestParams) => ipcRenderer.invoke(NATIVE_API_MAKE_HTTP_REQUEST, params),
 });
