@@ -5,6 +5,7 @@ import { RouterProvider, createRouter } from "@tanstack/react-router";
 
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
+import { Toaster } from "sonner";
 
 // Create a new router instance
 const router = createRouter({ routeTree });
@@ -17,4 +18,9 @@ declare module "@tanstack/react-router" {
 }
 
 const root = createRoot(document.getElementById("root")!);
-root.render(<RouterProvider router={router} />);
+root.render(
+  <>
+    <RouterProvider router={router} />
+    <Toaster position="top-right"/>
+  </>
+);

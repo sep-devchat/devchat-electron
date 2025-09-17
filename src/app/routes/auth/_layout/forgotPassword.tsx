@@ -6,6 +6,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   email: z.email({ message: "Invalid email address" }),
@@ -28,6 +29,7 @@ function RouteComponent() {
   const onSubmit = (data: FormData) => {
     console.log("Form submitted:", data);
     // Handle form submission here
+    toast.success("If an account with that email exists, a reset link has been sent.");
   };
 
   return (
