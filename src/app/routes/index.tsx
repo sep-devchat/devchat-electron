@@ -33,6 +33,13 @@ function Index() {
       >
         Go to Login
       </Button>
+      <Button
+        onClick={(e) => {
+          navigate({ to: "/auth/verification" });
+        }}
+      >
+        Go to verification
+      </Button>
     </div>
   );
 }

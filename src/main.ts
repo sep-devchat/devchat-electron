@@ -15,7 +15,7 @@ interface DeepLinkPayload {
 let pendingDeepLink: DeepLinkPayload | undefined; // store until window ready
 
 function extractDeepLinkFromArgv(argv: string[]): string | undefined {
-  return argv.find(a => a.startsWith(`${SCHEME}://`));
+  return argv.find((a) => a.startsWith(`${SCHEME}://`));
 }
 
 function parseDeepLink(url: string): DeepLinkPayload {
@@ -78,7 +78,7 @@ const createWindow = () => {
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },
-    autoHideMenuBar: true
+    autoHideMenuBar: true,
   });
 
   // and load the index.html of the app.
@@ -92,7 +92,9 @@ const createWindow = () => {
 
   mainWindow.maximize();
 
-  mainWindow.on("closed", () => { mainWindow = null; });
+  mainWindow.on("closed", () => {
+    mainWindow = null;
+  });
 
   // After first paint, deliver any pending deep link
   mainWindow.webContents.once("did-finish-load", () => {
@@ -105,7 +107,7 @@ const createWindow = () => {
   });
 
   // Open the DevTools (uncomment if needed)
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
 };
 
 // This method will be called when Electron has finished
@@ -116,7 +118,9 @@ app.on("ready", () => {
 
   // Register custom protocol (returns false if failed / already registered by another build)
   const registered = process.defaultApp
-    ? app.setAsDefaultProtocolClient(SCHEME, process.execPath, [path.resolve(process.argv[1])])
+    ? app.setAsDefaultProtocolClient(SCHEME, process.execPath, [
+        path.resolve(process.argv[1]),
+      ])
     : app.setAsDefaultProtocolClient(SCHEME);
   console.log(`Protocol ${SCHEME} registration result:`, registered);
 
