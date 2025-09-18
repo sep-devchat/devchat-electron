@@ -8,11 +8,12 @@ import {
   CardTitle,
 } from "@/app/components/ui/card";
 import { pkceIssueToken } from "@/app/lib/services/auth";
-import { NATIVE_API_OPEN_BROWSER_FOR_LOGIN } from "@/native/constants";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { LogIn, UserPlus, ExternalLink } from "lucide-react";
+import { toast } from "sonner";
+import { useAuth } from "@/app/hooks/use-auth";
 
 interface DeepLinkPayload {
   code: string;
@@ -25,20 +26,27 @@ export const Route = createFileRoute("/auth/login")({
 
 function RouteComponent() {
   const navigate = useNavigate();
+  const { refetchProfile } = useAuth();
   const [codeVerifier, setCodeVerifier] = useState<string>("");
   const [isOpening, setIsOpening] = useState<boolean>(false);
   const loginPkceMutation = useMutation({
     mutationFn: pkceIssueToken,
     onSuccess: (response) => {
-      console.log(response);
+      window.localStorage.setItem("accessToken", response.accessToken);
+      window.nativeAPI.storeRefreshToken(response.refreshToken);
+      refetchProfile();
+      toast.success("Login successfully!");
+      navigate({ to: "/" });
     },
     onError: (error) => {
-      console.error(error);
+      toast.error(
+        `Login failed: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
     },
   });
 
   useEffect(() => {
-    const dispose = nativeAPI.nativeAPICallback(
+    const dispose = window.nativeAPI.nativeAPICallback(
       "deep-link",
       (e, payload: DeepLinkPayload) => {
         loginPkceMutation.mutate({
@@ -74,7 +82,7 @@ function RouteComponent() {
           <Button
             variant="outline"
             onClick={() => {
-              navigate({ to: "/auth/register" })
+              navigate({ to: "/auth/register" });
             }}
           >
             <UserPlus className="size-4" /> Sign Up
@@ -83,9 +91,8 @@ function RouteComponent() {
             onClick={async () => {
               try {
                 setIsOpening(true);
-                const codeVerifier = await nativeAPI.invokeNativeAPI(
-                  NATIVE_API_OPEN_BROWSER_FOR_LOGIN
-                );
+                const codeVerifier =
+                  await window.nativeAPI.openBrowserForLogin();
                 setCodeVerifier(codeVerifier);
               } finally {
                 setIsOpening(false);
@@ -101,7 +108,8 @@ function RouteComponent() {
               </>
             ) : (
               <>
-                <LogIn className="size-4" /> Sign In <ExternalLink className="size-4" />
+                <LogIn className="size-4" /> Sign In{" "}
+                <ExternalLink className="size-4" />
               </>
             )}
           </Button>

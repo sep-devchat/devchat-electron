@@ -1,7 +1,7 @@
 import { shell } from "electron";
 import { NativeAPIHandler } from "../types";
 import crypto from "crypto";
-import readSettings from "./read-settings";
+import store from "../../store";
 
 function generateCodeVerifier() {
     // 43–128 recommended. 64 or 96 are common.
@@ -17,7 +17,7 @@ function generateCodeVerifier() {
 
 
 const openBrowserForLogin: NativeAPIHandler = async (e) => {
-    const appSettings = readSettings(e);
+    const appSettings = store.get("app")
     const codeVerifier = generateCodeVerifier();
     const codeChallenge = codeVerifier;
     const url = new URL(appSettings.appBaseUrl + "/auth/login");

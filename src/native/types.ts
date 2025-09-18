@@ -30,7 +30,7 @@ export interface ApiError<T = any> {
 export interface MakeHttpRequestParams {
   url: string;
   method: string;
-  body: any;
+  body?: any;
   headers?: Record<string, any>;
 }
 
@@ -42,7 +42,4 @@ export interface MakeHttpRequestResult<T = any, E = any> {
   error?: ApiError<E> | E;
 }
 
-export type NativeAPIHandler = (
-  event: IpcMainInvokeEvent,
-  ...args: any[]
-) => any;
+export type NativeAPIHandler = (e: IpcMainInvokeEvent, ...args: any[]) => Promise<any>;

@@ -2,8 +2,7 @@ import { app, BrowserWindow, ipcMain, Notification } from "electron";
 import path from "node:path";
 import started from "electron-squirrel-startup";
 import nativeAPI from "./native/native-api";
-import { NATIVE_API_MAKE_HTTP_REQUEST } from "./native/constants";
-import makeHttpRequest from "./native/apis/make-http-request";
+import "./store";
 
 const SCHEME = "devchat";
 
@@ -115,7 +114,6 @@ const createWindow = () => {
 // Some APIs can only be used after this event occurs.
 app.on("ready", () => {
   Object.entries(nativeAPI).forEach(([key, val]) => ipcMain.handle(key, val));
-  ipcMain.handle(NATIVE_API_MAKE_HTTP_REQUEST, makeHttpRequest);
 
   // Register custom protocol (returns false if failed / already registered by another build)
   const registered = process.defaultApp

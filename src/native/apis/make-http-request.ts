@@ -1,10 +1,10 @@
 import { IpcMainInvokeEvent } from "electron";
-import { ApiError, ApiResponseDto, MakeHttpRequestParams, MakeHttpRequestResult } from "../types";
+import { ApiError, ApiResponseDto, MakeHttpRequestParams, MakeHttpRequestResult, NativeAPIHandler } from "../types";
 import axios from "axios";
-import readSettings from "./read-settings";
+import store from "../../store";
 
-const makeHttpRequest = async <T = any, E = any>(e: IpcMainInvokeEvent, params: MakeHttpRequestParams): Promise<MakeHttpRequestResult<T, E>> => {
-    const appSettings = readSettings(e);
+const makeHttpRequest: NativeAPIHandler = async <T = any, E = any>(e: IpcMainInvokeEvent, params: MakeHttpRequestParams): Promise<MakeHttpRequestResult<T, E>> => {
+    const appSettings = store.get("app")
 
     try {
         const response = await axios<ApiResponseDto<T>>({

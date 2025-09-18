@@ -1,11 +1,25 @@
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage, FormRow } from '@/app/components/ui/form'
-import { createFileRoute } from '@tanstack/react-router'
-import { useForm } from 'react-hook-form'
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+  FormRow,
+} from "@/app/components/ui/form";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from '@/app/components/ui/input'
-import { Button } from '@/app/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/app/components/ui/card'
+import { Input } from "@/app/components/ui/input";
+import { Button } from "@/app/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/app/components/ui/card";
 
 const registerSchema = z.object({
   username: z
@@ -15,8 +29,6 @@ const registerSchema = z.object({
     .max(50, { message: "Username must be at most 50 characters" }),
 
   email: z
-    .string()
-    .trim()
     .email({ message: "Invalid email address" })
     .max(255, { message: "Email must be at most 255 characters" }),
 
@@ -50,8 +62,6 @@ const registerSchema = z.object({
     .max(100, { message: "Last name must be at most 100 characters" }),
 
   avatarUrl: z
-    .string()
-    .trim()
     .url({ message: "avatarUrl must be a valid URL" })
     .optional()
     .or(z.literal("").transform(() => undefined)),
@@ -66,26 +76,29 @@ const registerSchema = z.object({
 
 export type RegisterFormValues = z.infer<typeof registerSchema>;
 
-export const Route = createFileRoute('/auth/register')({
+export const Route = createFileRoute("/auth/register")({
   component: RouteComponent,
-})
+});
 
 function RouteComponent() {
+  const navigate = useNavigate();
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
   });
 
   const onSubmit = form.handleSubmit((values) => {
     // TODO: wire to backend register API
-    console.log('Register submit', values)
-  })
+    console.log("Register submit", values);
+  });
 
   return (
     <div className="min-h-screen w-screen flex items-center justify-center bg-gradient-to-br from-background to-muted/40 p-4">
       <Card className="w-full max-w-lg">
         <CardHeader>
           <CardTitle>Create your account</CardTitle>
-          <CardDescription>Fill in the details below to register.</CardDescription>
+          <CardDescription>
+            Fill in the details below to register.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -104,7 +117,10 @@ function RouteComponent() {
                 )}
               />
 
-              <FormRow names={["firstName", "lastName"]} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormRow
+                names={["firstName", "lastName"]}
+                className="grid grid-cols-1 md:grid-cols-2 gap-4"
+              >
                 <FormField
                   control={form.control}
                   name="firstName"
@@ -140,7 +156,11 @@ function RouteComponent() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="jane@example.com" {...field} />
+                      <Input
+                        type="email"
+                        placeholder="jane@example.com"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -154,7 +174,11 @@ function RouteComponent() {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="P@ssw0rd!" {...field} />
+                      <Input
+                        type="password"
+                        placeholder="P@ssw0rd!"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -168,7 +192,10 @@ function RouteComponent() {
                   <FormItem>
                     <FormLabel>Avatar URL (optional)</FormLabel>
                     <FormControl>
-                      <Input placeholder="https://cdn.example.com/avatars/jane.png" {...field} />
+                      <Input
+                        placeholder="https://cdn.example.com/avatars/jane.png"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -189,14 +216,20 @@ function RouteComponent() {
                 )}
               />
 
-              <div className="flex justify-end pt-2">
+              <div className="flex justify-end pt-2 gap-x-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => navigate({ to: "/auth/login" })}
+                >
+                  Back to Login
+                </Button>
                 <Button type="submit">Create account</Button>
               </div>
             </form>
           </Form>
         </CardContent>
-        <CardFooter></CardFooter>
       </Card>
     </div>
-  )
+  );
 }
