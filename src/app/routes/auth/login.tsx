@@ -39,9 +39,7 @@ function RouteComponent() {
       navigate({ to: "/" });
     },
     onError: (error) => {
-      toast.error(
-        `Login failed: ${error instanceof Error ? error.message : "Unknown error"}`
-      );
+      toast.error(`Login failed: ${error.message}`);
     },
   });
 

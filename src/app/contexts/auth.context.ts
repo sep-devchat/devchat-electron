@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { ProfileResponse } from "../lib/services/auth";
+import { ProfileResponse } from "../lib/services/auth/types";
 
 export interface AuthContextProps {
     profile?: ProfileResponse;

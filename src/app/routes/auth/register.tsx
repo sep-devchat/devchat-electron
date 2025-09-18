@@ -9,7 +9,6 @@ import {
 } from "@/app/components/ui/form";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/app/components/ui/input";
 import { Button } from "@/app/components/ui/button";
@@ -20,61 +19,14 @@ import {
   CardTitle,
   CardDescription,
 } from "@/app/components/ui/card";
-
-const registerSchema = z.object({
-  username: z
-    .string()
-    .trim()
-    .min(3, { message: "Username must be at least 3 characters" })
-    .max(50, { message: "Username must be at most 50 characters" }),
-
-  email: z
-    .email({ message: "Invalid email address" })
-    .max(255, { message: "Email must be at most 255 characters" }),
-
-  password: z
-    .string()
-    .min(8, { message: "Password must be at least 8 characters" })
-    .max(128, { message: "Password must be at most 128 characters" })
-    .refine((val) => /[a-z]/.test(val), {
-      message: "Password must contain at least 1 lowercase letter",
-    })
-    .refine((val) => /[A-Z]/.test(val), {
-      message: "Password must contain at least 1 uppercase letter",
-    })
-    .refine((val) => /\d/.test(val), {
-      message: "Password must contain at least 1 number",
-    })
-    .refine((val) => /[^A-Za-z0-9]/.test(val), {
-      message: "Password must contain at least 1 symbol",
-    }),
-
-  firstName: z
-    .string()
-    .trim()
-    .min(1, { message: "First name is required" })
-    .max(100, { message: "First name must be at most 100 characters" }),
-
-  lastName: z
-    .string()
-    .trim()
-    .min(1, { message: "Last name is required" })
-    .max(100, { message: "Last name must be at most 100 characters" }),
-
-  avatarUrl: z
-    .url({ message: "avatarUrl must be a valid URL" })
-    .optional()
-    .or(z.literal("").transform(() => undefined)),
-
-  timezone: z
-    .string()
-    .trim()
-    .max(50, { message: "Timezone must be at most 50 characters" })
-    .optional()
-    .or(z.literal("").transform(() => undefined)),
-});
-
-export type RegisterFormValues = z.infer<typeof registerSchema>;
+import {
+  RegisterFormValues,
+  registerSchema,
+} from "@/app/lib/services/auth/types";
+import { useMutation } from "@tanstack/react-query";
+import { register } from "@/app/lib/services/auth";
+import { useAuth } from "@/app/hooks/use-auth";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/auth/register")({
   component: RouteComponent,
@@ -85,10 +37,21 @@ function RouteComponent() {
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
   });
+  const { refetchProfile } = useAuth();
 
-  const onSubmit = form.handleSubmit((values) => {
-    // TODO: wire to backend register API
-    console.log("Register submit", values);
+  const registerMutation = useMutation({
+    mutationFn: register,
+    onSuccess: (data) => {
+      window.localStorage.setItem("accessToken", data.accessToken);
+      window.nativeAPI.storeRefreshToken(data.refreshToken);
+      refetchProfile();
+      toast.success("Account created successfully!");
+      navigate({ to: "/" });
+    },
+    onError: (error) => {
+      console.log(error);
+      toast.error(`Registration failed: ${error.message}`);
+    },
   });
 
   return (
@@ -102,7 +65,12 @@ function RouteComponent() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={onSubmit} className="grid grid-cols-1 gap-4">
+            <form
+              onSubmit={form.handleSubmit((values) =>
+                registerMutation.mutate(values)
+              )}
+              className="grid grid-cols-1 gap-4"
+            >
               <FormField
                 control={form.control}
                 name="username"
