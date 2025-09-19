@@ -5,6 +5,7 @@ interface nativeAPI {
   makeHttpRequest<T = any>(params: MakeHttpRequestParams): Promise<MakeHttpRequestResult<T>>;
   openBrowserForLogin(): Promise<string>;
   storeRefreshToken(token: string): Promise<void>;
+  getRefreshToken(): Promise<string>;
 }
 
 declare global {
