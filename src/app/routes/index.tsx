@@ -33,6 +33,13 @@ function Index() {
       >
         Go to Login
       </Button>
+      <Button
+        onClick={(e) => {
+          navigate({ to: "/main/chat" });
+        }}
+      >
+        Go to Chat Page
+      </Button>
     </div>
   );
 }
