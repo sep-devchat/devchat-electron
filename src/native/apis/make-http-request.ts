@@ -1,83 +1,65 @@
-import axios, { AxiosError } from "axios";
-import { NativeAPIHandler } from "../types";
-import { MakeHttpRequestArgs, MakeHttpRequestResult } from "../types";
+import { IpcMainInvokeEvent } from "electron";
+import { ApiError, ApiResponseDto, MakeHttpRequestParams, MakeHttpRequestResult, NativeAPIHandler } from "../types";
+import axios from "axios";
+import store from "../../store";
 
-const makeHttpRequest: NativeAPIHandler = async (_event, args: MakeHttpRequestArgs): Promise<MakeHttpRequestResult> => {
-    const {
-        url,
-        method = 'GET',
-        headers = {},
-        query = {},
-        body,
-        timeoutMs = 15000,
-        responseType = 'json'
-    } = args || {} as MakeHttpRequestArgs;
-
-    if (!url) {
-        return { ok: false, error: 'Missing url' };
-    }
+const makeHttpRequest: NativeAPIHandler = async <T = any, E = any>(e: IpcMainInvokeEvent, params: MakeHttpRequestParams): Promise<MakeHttpRequestResult<T, E>> => {
+    const appSettings = store.get("app")
 
     try {
-        const response = await axios.request({
-            url,
-            method: method as any,
-            headers,
-            params: query,
-            data: body,
-            timeout: timeoutMs,
-            responseType: responseType === 'arraybuffer' ? 'arraybuffer' : responseType === 'text' ? 'text' : 'json',
-            // Prevent axios from throwing on status codes so we can unify handling
-            validateStatus: () => true
+        const response = await axios<ApiResponseDto<T>>({
+            baseURL: appSettings.apiBaseUrl,
+            url: params.url,
+            method: params.method,
+            data: params.body,
+            headers: { ...params.headers }
         });
 
-        const normHeaders: Record<string, string> = {};
-        for (const [k, v] of Object.entries(response.headers || {})) {
-            if (Array.isArray(v)) normHeaders[k] = v.join(', '); else if (v != null) normHeaders[k] = String(v);
+        return {
+            ok: true,
+            status: response.status,
+            headers: Object.fromEntries(Object.entries(response.headers || {}).map(([k, v]) => [k, Array.isArray(v) ? v.join(', ') : String(v)])),
+            response: response.data,
         }
+    } catch (error: any) {
+        if (axios.isAxiosError(error)) {
+            const status = error.response?.status;
+            const headers = error.response?.headers as Record<string, string> | undefined;
+            const data = error.response?.data as ApiError<E> | E | undefined;
 
-        const ok = response.status >= 200 && response.status < 300;
-        if (ok) {
-            return {
-                ok: true,
-                status: response.status,
-                statusText: response.statusText,
-                headers: normHeaders,
-                data: response.data
-            };
-        } else {
+            // If server returns our ApiError shape, pass it through; otherwise wrap
+            const apiError: ApiError<E> | E | undefined = data && (typeof (data as any)?.message === 'string' && 'code' in (data as any)
+                ? (data as ApiError<E>)
+                : ({
+                    code: error.code || 'HTTP_ERROR',
+                    message: (error.message || 'Request failed'),
+                    detail: data as E,
+                    status,
+                } as ApiError<E>)
+            );
+
             return {
                 ok: false,
-                status: response.status,
-                statusText: response.statusText,
-                headers: normHeaders,
-                error: 'HTTP_ERROR',
-                data: response.data
+                status,
+                headers: headers && Object.fromEntries(Object.entries(headers).map(([k, v]) => [k, Array.isArray(v) ? v.join(', ') : String(v)])),
+                error: apiError ?? ({
+                    code: error.code || 'HTTP_ERROR',
+                    message: error.message || 'Request failed',
+                    detail: undefined as unknown as E,
+                    status,
+                } as ApiError<E>),
             };
         }
-    } catch (e) {
-        const err = e as AxiosError;
-        let status: number | undefined;
-        let statusText: string | undefined;
-        let headers: Record<string, string> | undefined;
-        let data: any = undefined;
-        if (err.response) {
-            status = err.response.status;
-            statusText = err.response.statusText;
-            headers = {};
-            for (const [k, v] of Object.entries(err.response.headers || {})) {
-                if (Array.isArray(v)) headers[k] = v.join(', '); else if (v != null) headers[k] = String(v);
-            }
-            data = err.response.data;
-        }
+
         return {
             ok: false,
-            status,
-            statusText,
-            headers,
-            error: err.message || 'REQUEST_FAILED',
-            data
-        };
+            error: {
+                code: 'UNKNOWN_ERROR',
+                message: String(error),
+                detail: undefined as unknown as E,
+            } as ApiError<E>,
+        }
     }
-};
+}
 
 export default makeHttpRequest;

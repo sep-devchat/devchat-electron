@@ -1,35 +1,45 @@
 import { IpcMainInvokeEvent } from "electron";
 
-export type NativeAPIHandler = (
-  event: IpcMainInvokeEvent,
-  ...args: any[]
-) => any;
-
-export interface MakeHttpRequestArgs {
-  url: string;
-  method?: string; // GET by default
-  headers?: Record<string, string>;
-  query?: Record<string, string | number | boolean | null | undefined>;
-  body?: any; // JSON serializable
-  timeoutMs?: number; // default 15000
-  responseType?: 'json' | 'text' | 'arraybuffer';
+export interface AppSettings {
+  appBaseUrl: string;
+  apiBaseUrl: string;
 }
 
-export interface MakeHttpRequestSuccess {
-  ok: true;
-  status: number;
-  statusText: string;
-  headers: Record<string, string>;
-  data: any;
+export interface PaginationDto {
+  page: number;
+  take: number;
+  totalRecord: number;
+  totalPage: number;
+  nextPage?: number;
+  prevPage?: number;
 }
 
-export interface MakeHttpRequestError {
-  ok: false;
+export interface ApiResponseDto<T = any> {
+  message: string;
+  data: T;
+  pagination?: PaginationDto;
+}
+
+export interface ApiError<T = any> {
+  code: string;
+  message: string;
+  detail: T;
   status?: number;
-  statusText?: string;
-  headers?: Record<string, string>;
-  error: string; // message
-  data?: any; // error response body if any
 }
 
-export type MakeHttpRequestResult = MakeHttpRequestSuccess | MakeHttpRequestError;
+export interface MakeHttpRequestParams {
+  url: string;
+  method: string;
+  body?: any;
+  headers?: Record<string, any>;
+}
+
+export interface MakeHttpRequestResult<T = any, E = any> {
+  ok: boolean;
+  status?: number;
+  headers?: Record<string, string>;
+  response?: ApiResponseDto<T>;
+  error?: ApiError<E> | E;
+}
+
+export type NativeAPIHandler = (e: IpcMainInvokeEvent, ...args: any[]) => Promise<any>;

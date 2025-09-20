@@ -135,11 +135,57 @@ function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
   )
 }
 
-function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
-  const { error, formMessageId } = useFormField()
-  const body = error ? String(error?.message ?? "") : props.children
+// Row-level coordination to keep grouped fields aligned only when any has an error
+type FormRowContextValue = {
+  reserve: boolean
+}
 
-  if (!body) {
+const FormRowContext = React.createContext<FormRowContextValue | null>(null)
+
+type FormRowProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = {
+  names: TName[]
+  className?: string
+  children: React.ReactNode
+}
+
+function FormRow<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+>({ names, className, children }: FormRowProps<TFieldValues, TName>) {
+  const { getFieldState } = useFormContext<TFieldValues>()
+  const formState = useFormState({ name: names as unknown as FieldPath<TFieldValues> | FieldPath<TFieldValues>[] })
+  // Determine if any field in the row currently has an error
+  const reserve = React.useMemo(() => {
+    return names.some((n) => getFieldState(n, formState).error)
+  }, [getFieldState, formState, names])
+
+  return (
+    <FormRowContext.Provider value={{ reserve }}>
+      <div className={cn(className)}>{children}</div>
+    </FormRowContext.Provider>
+  )
+}
+
+// Extend FormMessage to optionally derive reserve behavior from FormRow context
+type ReserveSpaceOpt = boolean | "row"
+
+type FormMessageProps = React.ComponentProps<"p"> & {
+  reserveSpace?: ReserveSpaceOpt
+}
+
+function useReserveSpace(reserveSpace?: ReserveSpaceOpt) {
+  const row = React.useContext(FormRowContext)
+  if (reserveSpace === "row") return !!row?.reserve
+  return !!reserveSpace
+}
+
+// Re-define after helper
+function FormMessage({ className, reserveSpace, ...props }: FormMessageProps) {
+  const { error, formMessageId } = useFormField()
+  const message = error ? String(error?.message ?? "") : props.children
+  const shouldReserve = useReserveSpace(reserveSpace)
+
+  if (!shouldReserve && !message) {
     return null
   }
 
@@ -147,10 +193,17 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
     <p
       data-slot="form-message"
       id={formMessageId}
-      className={cn("text-destructive text-sm", className)}
+      className={cn(
+        "text-destructive text-sm",
+        shouldReserve ? "min-h-0 md:min-h-5" : undefined,
+        shouldReserve && !message ? "opacity-0" : undefined,
+        className
+      )}
+      role={message ? "alert" : undefined}
+      aria-live={message ? "polite" : undefined}
       {...props}
     >
-      {body}
+      {message as React.ReactNode}
     </p>
   )
 }
@@ -158,6 +211,7 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
 export {
   useFormField,
   Form,
+  FormRow,
   FormItem,
   FormLabel,
   FormControl,

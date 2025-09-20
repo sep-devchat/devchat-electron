@@ -1,10 +1,7 @@
 import { shell } from "electron";
 import { NativeAPIHandler } from "../types";
 import crypto from "crypto";
-
-const baseUrl = "http://localhost:5173";
-// const baseUrl = "https://devchat.online";
-const loginUrl = (codeChallengeMethod: string, codeChallenge: string) => `${baseUrl}/auth/login?codeChallengeMethod=${codeChallengeMethod}&codeChallenge=${codeChallenge}`;
+import store from "../../store";
 
 function generateCodeVerifier() {
     // 43–128 recommended. 64 or 96 are common.
@@ -20,10 +17,13 @@ function generateCodeVerifier() {
 
 
 const openBrowserForLogin: NativeAPIHandler = async (e) => {
+    const appSettings = store.get("app")
     const codeVerifier = generateCodeVerifier();
     const codeChallenge = codeVerifier;
-    const url = loginUrl("plain", codeChallenge);
-    await shell.openExternal(url);
+    const url = new URL(appSettings.appBaseUrl + "/auth/login");
+    url.searchParams.set("codeChallengeMethod", "plain");
+    url.searchParams.set("codeChallenge", codeChallenge);
+    await shell.openExternal(url.toString());
     return codeVerifier;
 }
 

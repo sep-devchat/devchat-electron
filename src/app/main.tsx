@@ -1,26 +1,28 @@
 import "./index.css";
 
 import { createRoot } from "react-dom/client";
-import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { RouterProvider } from "@tanstack/react-router";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import router from "./lib/router";
+import AuthProvider from "./components/AuthProvider";
+import { useAuth } from "./hooks/use-auth";
 
-// Import the generated route tree
-import { routeTree } from "./routeTree.gen";
-import { Toaster } from "sonner";
-
-// Create a new router instance
-const router = createRouter({ routeTree });
-
-// Register the router instance for type safety
-declare module "@tanstack/react-router" {
-  interface Register {
-    router: typeof router;
-  }
-}
+const queryClient = new QueryClient();
 
 const root = createRoot(document.getElementById("root")!);
-root.render(
-  <>
-    <RouterProvider router={router} />
-    <Toaster position="top-right"/>
-  </>
-);
+root.render(<App />);
+
+function InnerApp() {
+  const auth = useAuth();
+  return <RouterProvider router={router} context={{ auth }} />;
+}
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <InnerApp />
+      </AuthProvider>
+    </QueryClientProvider>
+  );
+}

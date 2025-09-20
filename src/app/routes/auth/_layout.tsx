@@ -8,16 +8,14 @@ export const Route = createFileRoute("/auth/_layout")({
 function RouteComponent() {
   return (
     <div 
-      className="min-h-screen flex flex-col items-center justify-center bg-gray-50"
+      className="min-h-screen flex flex-col items-center justify-center"
       style={{ 
         backgroundImage: `url(${authBg})`, 
         backgroundSize: 'cover', 
         backgroundPosition: 'center' 
       }}
     >
-      <div className="w-full max-w-md">
         <Outlet />
-      </div>
     </div>
   );
 }

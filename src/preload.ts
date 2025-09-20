@@ -2,12 +2,21 @@
 
 import { contextBridge, ipcRenderer } from "electron";
 
-// https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
+const nativeAPINames = [
+  "makeHttpRequest",
+  "openBrowserForLogin",
+  "storeRefreshToken"
+]
+
+const api: any = {};
+for (const name of nativeAPINames) {
+  api[name] = (...args: any[]) => ipcRenderer.invoke(name, ...args);
+}
+
 contextBridge.exposeInMainWorld("nativeAPI", {
-  invokeNativeAPI: (channel: string, ...args: any[]) =>
-    ipcRenderer.invoke(channel, ...args),
   nativeAPICallback: (channel: string, cb: (event: Electron.IpcRendererEvent, ...args: any[]) => void) => {
     ipcRenderer.on(channel, cb);
     return () => ipcRenderer.off(channel, cb);
   },
+  ...api
 });

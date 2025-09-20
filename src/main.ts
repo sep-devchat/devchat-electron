@@ -2,7 +2,7 @@ import { app, BrowserWindow, ipcMain, Notification } from "electron";
 import path from "node:path";
 import started from "electron-squirrel-startup";
 import nativeAPI from "./native/native-api";
-import { installExtension, REDUX_DEVTOOLS } from 'electron-devtools-installer';
+import "./store";
 
 const SCHEME = "devchat";
 
@@ -34,7 +34,7 @@ function parseDeepLink(url: string): DeepLinkPayload {
 
 function handleDeepLink(url: string) {
   const payload = parseDeepLink(url);
-  console.log("Deep link received:", payload);
+  // console.log("Deep link received:", payload);
   if (mainWindow) {
     if (mainWindow.isMinimized()) mainWindow.restore();
     mainWindow.focus();
@@ -79,6 +79,7 @@ const createWindow = () => {
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },
+    autoHideMenuBar: true
   });
 
   // and load the index.html of the app.
