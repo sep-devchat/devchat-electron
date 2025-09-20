@@ -1,19 +1,17 @@
 import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import { Toaster } from "../components/ui/sonner";
+import { AuthContextProps } from "../contexts/auth.context";
 
-export const Route = createRootRoute({
+interface RootRouteContext {
+  auth: AuthContextProps;
+}
+
+export const Route = createRootRoute<RootRouteContext>({
   component: () => (
     <>
-      <div className="p-2 flex gap-2">
-        <Link to="/" className="[&.active]:font-bold">
-          Home
-        </Link>
-        <Link to="/about" className="[&.active]:font-bold">
-          About
-        </Link>
-      </div>
-      <hr />
       <Outlet />
+      <Toaster position="top-center" richColors />
       <TanStackRouterDevtools />
     </>
   ),

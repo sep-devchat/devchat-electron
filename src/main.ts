@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain, Notification } from "electron";
 import path from "node:path";
 import started from "electron-squirrel-startup";
 import nativeAPI from "./native/native-api";
+import "./store";
 
 const SCHEME = "devchat";
 
