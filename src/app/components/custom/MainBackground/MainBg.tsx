@@ -1,9 +1,8 @@
-import { PageWrapper } from './MainBg.styled'
-import bgImage from "@/app/assets/image/loginBackground.png";
+import { useAssets } from "@/app/hooks/use-assets";
+import { PageWrapper } from "./MainBg.styled";
 
 export default function MainBg() {
-  return (
-    <PageWrapper backgroundImage={bgImage}>
-    </PageWrapper>
-  )
+	const [bgImage] = useAssets(["image/loginBackground.png"]);
+
+	return <PageWrapper backgroundImage={bgImage}></PageWrapper>;
 }

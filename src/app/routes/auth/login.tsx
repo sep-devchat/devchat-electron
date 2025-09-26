@@ -36,7 +36,7 @@ function RouteComponent() {
 			window.nativeAPI.storeRefreshToken(response.refreshToken);
 			refetchProfile();
 			toast.success("Login successfully!");
-			navigate({ to: "/" });
+			navigate({ to: "/user/channel" });
 		},
 		onError: (error) => {
 			toast.error(`Login failed: ${error.message}`);

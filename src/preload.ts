@@ -6,6 +6,7 @@ const nativeAPINames = [
 	"makeHttpRequest",
 	"openBrowserForLogin",
 	"storeRefreshToken",
+	"createAssetUrl"
 ];
 
 const api: any = {};

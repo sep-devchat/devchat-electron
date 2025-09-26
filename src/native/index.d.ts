@@ -11,6 +11,7 @@ interface nativeAPI {
 	openBrowserForLogin(): Promise<string>;
 	storeRefreshToken(token: string): Promise<void>;
 	getRefreshToken(): Promise<string>;
+	createAssetUrl(relPath: string): Promise<string>;
 }
 
 declare global {
