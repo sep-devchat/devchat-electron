@@ -6,7 +6,12 @@ import {
 	MakeHttpRequestResult,
 	NativeAPIHandler,
 } from "../types";
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from "axios";
+import axios, {
+	AxiosError,
+	AxiosHeaders,
+	AxiosInstance,
+	AxiosRequestConfig,
+} from "axios";
 import store from "../../store";
 
 /**
@@ -92,9 +97,16 @@ axiosInstance.interceptors.request.use((config) => {
 	}
 
 	// If caller provided an Authorization header, capture token for reuse
+	const hdrs = config.headers;
 	const providedAuth =
-		(config.headers as any)?.Authorization ||
-		(config.headers as any)?.authorization;
+		hdrs instanceof AxiosHeaders
+			? hdrs.get("Authorization") || hdrs.get("authorization")
+			: (typeof hdrs === "object" && hdrs !== null && "Authorization" in hdrs
+					? (hdrs as Record<string, unknown>)["Authorization"]
+					: undefined) ||
+				(typeof hdrs === "object" && hdrs !== null && "authorization" in hdrs
+					? (hdrs as Record<string, unknown>)["authorization"]
+					: undefined);
 	if (
 		providedAuth &&
 		typeof providedAuth === "string" &&
@@ -106,11 +118,32 @@ axiosInstance.interceptors.request.use((config) => {
 
 	// Attach our latest token if no Authorization header present
 	if (accessToken) {
-		// AxiosRequestHeaders is a special class; to avoid type conflict we cast to any for dynamic assignment.
-		const headers: any = config.headers ?? (config.headers = {} as any);
-		if (!("Authorization" in headers) && !("authorization" in headers)) {
-			headers["Authorization"] = `Bearer ${accessToken}`;
-		}
+		// Attach in a way that works with AxiosHeaders without using any
+		const assign = (key: string, val: string) => {
+			if (!(config.headers instanceof AxiosHeaders)) {
+				config.headers = new AxiosHeaders();
+			}
+			// now headers is AxiosHeaders
+			(
+				config.headers as unknown as { set: (k: string, v: string) => void }
+			).set(key, val);
+		};
+
+		const hasAuth = () => {
+			const h = config.headers;
+			if (!h) return false;
+			if (h instanceof AxiosHeaders) {
+				const v = h.get("Authorization") || h.get("authorization");
+				return typeof v === "string" && v.length > 0;
+			}
+			const r = h as Record<string, unknown>;
+			return (
+				("Authorization" in r && typeof r["Authorization"] === "string") ||
+				("authorization" in r && typeof r["authorization"] === "string")
+			);
+		};
+
+		if (!hasAuth()) assign("Authorization", `Bearer ${accessToken}`);
 	}
 	return config;
 });
@@ -141,9 +174,14 @@ axiosInstance.interceptors.response.use(
 
 			const newToken = await refreshingPromise;
 			if (newToken) {
-				originalRequest.headers = originalRequest.headers || {};
-				(originalRequest.headers as any)["Authorization"] =
-					`Bearer ${newToken}`;
+				if (!(originalRequest.headers instanceof AxiosHeaders)) {
+					originalRequest.headers = new AxiosHeaders();
+				}
+				(
+					originalRequest.headers as unknown as {
+						set: (k: string, v: string) => void;
+					}
+				).set("Authorization", `Bearer ${newToken}`);
 				return axiosInstance(originalRequest);
 			} else {
 				// Clear in-memory token so future attempts don't reuse stale token
@@ -155,7 +193,7 @@ axiosInstance.interceptors.response.use(
 	},
 );
 
-const makeHttpRequest: NativeAPIHandler = async <T = any, E = any>(
+const makeHttpRequest: NativeAPIHandler = async <T = unknown, E = unknown>(
 	e: IpcMainInvokeEvent,
 	params: MakeHttpRequestParams,
 ): Promise<MakeHttpRequestResult<T, E>> => {
@@ -165,7 +203,7 @@ const makeHttpRequest: NativeAPIHandler = async <T = any, E = any>(
 		const response = await axiosInstance.request<ApiResponseDto<T>>({
 			baseURL: appSettings.apiBaseUrl,
 			url: params.url,
-			method: params.method as any,
+			method: params.method as AxiosRequestConfig["method"],
 			data: params.body,
 			headers: { ...params.headers },
 		});
@@ -181,7 +219,7 @@ const makeHttpRequest: NativeAPIHandler = async <T = any, E = any>(
 			),
 			response: response.data,
 		};
-	} catch (error: any) {
+	} catch (error: unknown) {
 		if (axios.isAxiosError(error)) {
 			const status = error.response?.status;
 			const headers = error.response?.headers as
@@ -191,7 +229,8 @@ const makeHttpRequest: NativeAPIHandler = async <T = any, E = any>(
 
 			const apiError: ApiError<E> | E | undefined =
 				data &&
-				(typeof (data as any)?.message === "string" && "code" in (data as any)
+				(typeof (data as Record<string, unknown>)?.message === "string" &&
+				"code" in (data as Record<string, unknown>)
 					? (data as ApiError<E>)
 					: ({
 							code: error.code || "HTTP_ERROR",

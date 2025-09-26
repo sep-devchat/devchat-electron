@@ -1,8 +1,5 @@
 echo "Pre-commit hook running..."
 
-echo "Run prettier..."
-yarn prettier:run
-
 echo "Run lint..."
 yarn lint
 

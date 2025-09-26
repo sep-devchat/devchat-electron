@@ -20,13 +20,13 @@ export const Route = createFileRoute("/user/channel")({
 });
 
 function ChatChannel() {
-	const { profile } = useAuth();
+	useAuth();
 	const data: SampleData = sampleData();
 
-	const [activeSection, setActiveSection] = useState<any>("");
-	const [channelSelected, setChannelSelected] = useState<any>("");
-	const [iconSelected, setIconSelected] = useState<any>("");
-	const [grNameSelected, setGrNameSelected] = useState<any>("");
+	const [activeSection, setActiveSection] = useState<string>("");
+	const [, setChannelSelected] = useState<string>("");
+	const [iconSelected, setIconSelected] = useState<string>("");
+	const [grNameSelected, setGrNameSelected] = useState<string>("");
 
 	useEffect(() => {
 		setActiveSection(data.groups[0]?.name || "");
@@ -57,7 +57,7 @@ function ChatChannel() {
 				<ContentWrapper>
 					<SidebarMenu
 						activeSection={activeSection}
-						channelSelected={channelSelected}
+						channelSelected={setChannelSelected}
 						setGrNameSelected={setGrNameSelected}
 					/>
 					<CenterPanel

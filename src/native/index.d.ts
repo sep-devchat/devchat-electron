@@ -3,9 +3,9 @@ import { MakeHttpRequestParams, MakeHttpRequestResult } from "./types";
 interface nativeAPI {
 	nativeAPICallback(
 		channel: string,
-		cb: (event: Electron.IpcRendererEvent, ...args: any[]) => void,
+		cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void,
 	): () => void;
-	makeHttpRequest<T = any>(
+	makeHttpRequest<T = unknown>(
 		params: MakeHttpRequestParams,
 	): Promise<MakeHttpRequestResult<T>>;
 	openBrowserForLogin(): Promise<string>;

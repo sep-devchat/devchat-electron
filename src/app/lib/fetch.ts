@@ -3,7 +3,9 @@ import router from "./router";
 
 // Simplified fetch: refresh logic now handled by native axios interceptors.
 // We only attach the current access token (if any) and surface errors.
-const fetch = async <T = any>(params: MakeHttpRequestParams): Promise<T> => {
+const fetch = async <T = unknown>(
+	params: MakeHttpRequestParams,
+): Promise<T> => {
 	const accessToken = window.localStorage.getItem("accessToken") || undefined;
 	const result = await window.nativeAPI.makeHttpRequest<T>({
 		...params,
@@ -27,7 +29,7 @@ const fetch = async <T = any>(params: MakeHttpRequestParams): Promise<T> => {
 		throw result.error;
 	}
 
-	return result.response!.data;
+	return result.response?.data as T;
 };
 
 export default fetch;

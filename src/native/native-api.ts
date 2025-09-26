@@ -10,7 +10,7 @@ const nativeAPI: Record<string, NativeAPIHandler> = {
 	openBrowserForLogin,
 	storeRefreshToken,
 	getRefreshToken,
-	createAssetUrl
+	createAssetUrl,
 };
 
 export default nativeAPI;

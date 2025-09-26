@@ -58,7 +58,7 @@ function RouteComponent() {
 		return () => {
 			dispose();
 		};
-	}, [codeVerifier]);
+	}, [codeVerifier, loginPkceMutation]);
 
 	return (
 		<div className="min-h-screen w-screen flex items-center justify-center bg-gradient-to-br from-background to-muted/40 p-4">

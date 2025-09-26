@@ -1,5 +1,15 @@
 import React, { useRef, useEffect } from "react";
-import { Palette, Shield, Search } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import {
+	Palette,
+	Shield,
+	Search,
+	Home,
+	User,
+	MessageCircle,
+	Bell,
+	Settings,
+} from "lucide-react";
 import {
 	Header,
 	SettingRows,
@@ -23,7 +33,6 @@ import {
 	Title,
 	NotificationButton,
 } from "./SettingsMenu.styled";
-import { Home, User, MessageCircle, Bell, Settings } from "lucide-react";
 import { useAssets } from "@/app/hooks/use-assets";
 
 type SettingsSection =
@@ -36,7 +45,7 @@ type SettingsSection =
 interface MenuItemType {
 	id: SettingsSection;
 	label: string;
-	icon: React.ComponentType<any>;
+	icon: LucideIcon;
 }
 
 interface SettingsMenuProps {
