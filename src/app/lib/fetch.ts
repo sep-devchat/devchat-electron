@@ -17,13 +17,7 @@ const fetch = async <T = unknown>(
 
 	if (result.error) {
 		if (result.status === 401) {
-			// Interceptor-side refresh already failed; ensure local tokens cleared and redirect.
 			window.localStorage.removeItem("accessToken");
-			try {
-				await window.nativeAPI.storeRefreshToken("");
-			} catch {
-				/* ignore */
-			}
 			router.navigate({ to: "/auth/login" });
 		}
 		throw result.error;

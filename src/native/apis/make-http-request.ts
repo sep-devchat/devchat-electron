@@ -1,4 +1,4 @@
-import { IpcMainInvokeEvent, safeStorage } from "electron";
+import { IpcMainInvokeEvent } from "electron";
 import {
 	ApiError,
 	ApiResponseDto,
