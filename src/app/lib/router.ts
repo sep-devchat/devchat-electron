@@ -1,6 +1,7 @@
 // Import the generated route tree
 import { createMemoryHistory, createRouter } from "@tanstack/react-router";
 import { routeTree } from "../routeTree.gen";
+import type { AuthContextProps } from "../contexts/auth.context";
 
 const history = createMemoryHistory({ initialEntries: ["/"] });
 
@@ -9,7 +10,8 @@ const router = createRouter({
 	routeTree,
 	history,
 	context: {
-		auth: undefined!,
+		// Will be provided at runtime via RouterProvider context
+		auth: undefined as unknown as AuthContextProps,
 	},
 });
 

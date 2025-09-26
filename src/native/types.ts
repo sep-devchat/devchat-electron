@@ -14,13 +14,13 @@ export interface PaginationDto {
 	prevPage?: number;
 }
 
-export interface ApiResponseDto<T = any> {
+export interface ApiResponseDto<T = unknown> {
 	message: string;
 	data: T;
 	pagination?: PaginationDto;
 }
 
-export interface ApiError<T = any> {
+export interface ApiError<T = unknown> {
 	code: string;
 	message: string;
 	detail: T;
@@ -30,11 +30,11 @@ export interface ApiError<T = any> {
 export interface MakeHttpRequestParams {
 	url: string;
 	method: string;
-	body?: any;
-	headers?: Record<string, any>;
+	body?: unknown;
+	headers?: Record<string, string | number | boolean>;
 }
 
-export interface MakeHttpRequestResult<T = any, E = any> {
+export interface MakeHttpRequestResult<T = unknown, E = unknown> {
 	ok: boolean;
 	status?: number;
 	headers?: Record<string, string>;
@@ -44,5 +44,5 @@ export interface MakeHttpRequestResult<T = any, E = any> {
 
 export type NativeAPIHandler = (
 	e: IpcMainInvokeEvent,
-	...args: any[]
-) => Promise<any>;
+	...args: unknown[]
+) => Promise<unknown>;

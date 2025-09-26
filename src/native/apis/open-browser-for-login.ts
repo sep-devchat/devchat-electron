@@ -16,7 +16,7 @@ function generateCodeVerifier() {
 	return verifier;
 }
 
-const openBrowserForLogin: NativeAPIHandler = async (e) => {
+const openBrowserForLogin: NativeAPIHandler = async () => {
 	const appSettings = store.get("app");
 	const codeVerifier = generateCodeVerifier();
 	const codeChallenge = codeVerifier;

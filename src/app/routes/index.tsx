@@ -37,7 +37,9 @@ function Index() {
 					</div>
 				</div>
 				<div className="p-3 border-t text-xs text-muted-foreground">
-					{isAuthed ? `Signed in as ${profile!.firstName}` : "Not signed in"}
+					{isAuthed
+						? `Signed in as ${profile?.firstName ?? ""}`
+						: "Not signed in"}
 				</div>
 			</aside>
 
@@ -73,7 +75,7 @@ function Index() {
 						{isAuthed ? (
 							<div className="space-y-4">
 								<h2 className="text-xl font-semibold tracking-tight">
-									Welcome back, {profile!.firstName}
+									Welcome back, {profile?.firstName ?? ""}
 								</h2>
 								<p className="text-sm text-muted-foreground max-w-prose">
 									This is your home screen. Select a conversation on the left or
