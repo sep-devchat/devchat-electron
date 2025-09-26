@@ -3,14 +3,12 @@ import { app } from 'electron';
 import { NativeAPIHandler } from '../types';
 
 const createAssetUrl: NativeAPIHandler = async (e, relPath: string) => {
-    if (!app.isPackaged) {
-        return path.join('assets', relPath);
-    }
-
-    // Packaged: renderer likely loaded via file:// so direct file reference works.
-    const assetsPath = path.join(process.resourcesPath, 'assets', relPath);
-    const prefix = process.platform === 'win32' ? 'file:///' : 'file://';
-    return `${prefix}${assetsPath.replace(/\\/g, '/')}`;
+    // Build an absolute URL based on the renderer's current URL (dev: http(s)://, prod: file://)
+    const base = e.sender.getURL();
+    // `publicDir` serves files from its root, so do NOT prefix with 'assets/'
+    const normalized = relPath.replace(/^[/\\]+/, "").replace(/\\/g, "/");
+    const url = new URL(normalized, base);
+    return url.toString();
 };
 
 export default createAssetUrl;

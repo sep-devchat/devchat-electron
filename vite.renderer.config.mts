@@ -14,6 +14,9 @@ export default defineConfig({
 		react(),
 		tailwindcss(),
 	],
+	// Serve static files from the project's `assets` folder during development
+	// and copy them to the renderer output on build.
+	publicDir: path.resolve(__dirname, "./assets"),
 	resolve: {
 		alias: {
 			"@": path.resolve(__dirname, "./src"),
