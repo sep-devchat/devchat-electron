@@ -4,15 +4,15 @@ import { Toaster } from "../components/ui/sonner";
 import { AuthContextProps } from "../contexts/auth.context";
 
 interface RootRouteContext {
-  auth: AuthContextProps;
+	auth: AuthContextProps;
 }
 
 export const Route = createRootRoute<RootRouteContext>({
-  component: () => (
-    <>
-      <Outlet />
-      <Toaster position="top-center" richColors />
-      <TanStackRouterDevtools />
-    </>
-  ),
+	component: () => (
+		<>
+			<Outlet />
+			<Toaster position="top-center" richColors />
+			<TanStackRouterDevtools />
+		</>
+	),
 });

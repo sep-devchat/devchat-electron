@@ -1,86 +1,86 @@
 import z from "zod";
 
 export interface PkceIssueTokenRequest {
-    codeVerifier: string;
-    codeChallengeMethod: string;
-    authCode: string;
+	codeVerifier: string;
+	codeChallengeMethod: string;
+	authCode: string;
 }
 
 export interface TokenResponse {
-    accessToken: string;
-    refreshToken: string;
+	accessToken: string;
+	refreshToken: string;
 }
 
 export interface ProfileResponse {
-    id: string;
-    username: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-    avatarUrl?: string;
-    isActive: boolean;
-    emailVerified: boolean;
-    createdAt: string;
-    updatedAt: string;
-    lastLogin?: string;
-    timezone?: string;
+	id: string;
+	username: string;
+	email: string;
+	firstName: string;
+	lastName: string;
+	avatarUrl?: string;
+	isActive: boolean;
+	emailVerified: boolean;
+	createdAt: string;
+	updatedAt: string;
+	lastLogin?: string;
+	timezone?: string;
 }
 
 export const registerSchema = z.object({
-    username: z
-        .string()
-        .trim()
-        .min(3, { message: "Username must be at least 3 characters" })
-        .max(50, { message: "Username must be at most 50 characters" }),
+	username: z
+		.string()
+		.trim()
+		.min(3, { message: "Username must be at least 3 characters" })
+		.max(50, { message: "Username must be at most 50 characters" }),
 
-    email: z
-        .email({ message: "Invalid email address" })
-        .max(255, { message: "Email must be at most 255 characters" }),
+	email: z
+		.email({ message: "Invalid email address" })
+		.max(255, { message: "Email must be at most 255 characters" }),
 
-    password: z
-        .string()
-        .min(8, { message: "Password must be at least 8 characters" })
-        .max(128, { message: "Password must be at most 128 characters" })
-        .refine((val) => /[a-z]/.test(val), {
-            message: "Password must contain at least 1 lowercase letter",
-        })
-        .refine((val) => /[A-Z]/.test(val), {
-            message: "Password must contain at least 1 uppercase letter",
-        })
-        .refine((val) => /\d/.test(val), {
-            message: "Password must contain at least 1 number",
-        })
-        .refine((val) => /[^A-Za-z0-9]/.test(val), {
-            message: "Password must contain at least 1 symbol",
-        }),
+	password: z
+		.string()
+		.min(8, { message: "Password must be at least 8 characters" })
+		.max(128, { message: "Password must be at most 128 characters" })
+		.refine((val) => /[a-z]/.test(val), {
+			message: "Password must contain at least 1 lowercase letter",
+		})
+		.refine((val) => /[A-Z]/.test(val), {
+			message: "Password must contain at least 1 uppercase letter",
+		})
+		.refine((val) => /\d/.test(val), {
+			message: "Password must contain at least 1 number",
+		})
+		.refine((val) => /[^A-Za-z0-9]/.test(val), {
+			message: "Password must contain at least 1 symbol",
+		}),
 
-    firstName: z
-        .string()
-        .trim()
-        .min(1, { message: "First name is required" })
-        .max(100, { message: "First name must be at most 100 characters" }),
+	firstName: z
+		.string()
+		.trim()
+		.min(1, { message: "First name is required" })
+		.max(100, { message: "First name must be at most 100 characters" }),
 
-    lastName: z
-        .string()
-        .trim()
-        .min(1, { message: "Last name is required" })
-        .max(100, { message: "Last name must be at most 100 characters" }),
+	lastName: z
+		.string()
+		.trim()
+		.min(1, { message: "Last name is required" })
+		.max(100, { message: "Last name must be at most 100 characters" }),
 
-    avatarUrl: z
-        .url({ message: "avatarUrl must be a valid URL" })
-        .optional()
-        .or(z.literal("").transform(() => undefined)),
+	avatarUrl: z
+		.url({ message: "avatarUrl must be a valid URL" })
+		.optional()
+		.or(z.literal("").transform(() => undefined)),
 
-    timezone: z
-        .string()
-        .trim()
-        .max(50, { message: "Timezone must be at most 50 characters" })
-        .optional()
-        .or(z.literal("").transform(() => undefined)),
+	timezone: z
+		.string()
+		.trim()
+		.max(50, { message: "Timezone must be at most 50 characters" })
+		.optional()
+		.or(z.literal("").transform(() => undefined)),
 });
 
 export type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export interface RefreshTokenRequest {
-    refreshToken: string;
+	refreshToken: string;
 }

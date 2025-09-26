@@ -39,6 +39,7 @@ npm start
 ```
 
 Notes:
+
 - `npm start` runs `electron-forge start` (see `package.json`).
 - The first run will generate TanStack Router route artifacts such as `src/app/routeTree.gen.ts` if they don't exist yet.
 

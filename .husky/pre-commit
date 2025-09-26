@@ -1,0 +1,10 @@
+echo "Pre-commit hook running..."
+
+echo "Run prettier..."
+yarn prettier:run
+
+echo "Test build..."
+yarn package
+
+echo "Add changes to git..."
+git add .

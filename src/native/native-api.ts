@@ -5,10 +5,10 @@ import storeRefreshToken from "./apis/store-refresh-token";
 import { NativeAPIHandler } from "./types";
 
 const nativeAPI: Record<string, NativeAPIHandler> = {
-  makeHttpRequest,
-  openBrowserForLogin,
-  storeRefreshToken,
-  getRefreshToken
+	makeHttpRequest,
+	openBrowserForLogin,
+	storeRefreshToken,
+	getRefreshToken,
 };
 
 export default nativeAPI;

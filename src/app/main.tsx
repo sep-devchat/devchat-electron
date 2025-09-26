@@ -13,16 +13,16 @@ const root = createRoot(document.getElementById("root")!);
 root.render(<App />);
 
 function InnerApp() {
-  const auth = useAuth();
-  return <RouterProvider router={router} context={{ auth }} />;
+	const auth = useAuth();
+	return <RouterProvider router={router} context={{ auth }} />;
 }
 
 function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <InnerApp />
-      </AuthProvider>
-    </QueryClientProvider>
-  );
+	return (
+		<QueryClientProvider client={queryClient}>
+			<AuthProvider>
+				<InnerApp />
+			</AuthProvider>
+		</QueryClientProvider>
+	);
 }
