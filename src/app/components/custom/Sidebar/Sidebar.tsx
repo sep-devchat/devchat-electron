@@ -212,7 +212,9 @@ export const SidebarMenu: React.FC<SidebarMenuProps> = ({
 										{item.label}
 									</MenuItem>
 								))
-							) : expanded && expanded.channels && expanded.channels.length > 0 ? (
+							) : expanded &&
+							  expanded.channels &&
+							  expanded.channels.length > 0 ? (
 								expanded.channels.map((ch) => (
 									<MenuItem
 										key={ch.channel_id}

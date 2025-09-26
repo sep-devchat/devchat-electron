@@ -14,6 +14,7 @@ import {
 } from "@/app/pages/User/Channel/Channel.styled";
 import { sampleData, SampleData } from "@/app/pages/User/Channel/sample-data";
 import { useAuth } from "@/app/hooks/use-auth";
+import AuthLayout from "@/app/components/AuthLayout";
 
 export const Route = createFileRoute("/user/channel")({
 	component: ChatChannel,
@@ -47,7 +48,7 @@ function ChatChannel() {
 	};
 
 	return (
-		<>
+		<AuthLayout>
 			<MainBg />
 			<PageWrapper>
 				<HeaderBar
@@ -68,6 +69,6 @@ function ChatChannel() {
 					{renderPanel()}
 				</ContentWrapper>
 			</PageWrapper>
-		</>
+		</AuthLayout>
 	);
 }

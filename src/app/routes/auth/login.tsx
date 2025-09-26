@@ -31,10 +31,10 @@ function RouteComponent() {
 	const [isOpening, setIsOpening] = useState<boolean>(false);
 	const loginPkceMutation = useMutation({
 		mutationFn: pkceIssueToken,
-		onSuccess: (response) => {
+		onSuccess: async (response) => {
 			window.localStorage.setItem("accessToken", response.accessToken);
 			window.nativeAPI.storeRefreshToken(response.refreshToken);
-			refetchProfile();
+			await refetchProfile();
 			toast.success("Login successfully!");
 			navigate({ to: "/user/channel" });
 		},

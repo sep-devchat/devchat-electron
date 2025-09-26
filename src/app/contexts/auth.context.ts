@@ -3,7 +3,8 @@ import { ProfileResponse } from "../lib/services/auth/types";
 
 export interface AuthContextProps {
 	profile?: ProfileResponse;
-	refetchProfile: () => void;
+	refetchProfile: () => Promise<void>;
+	isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextProps | null>(null);

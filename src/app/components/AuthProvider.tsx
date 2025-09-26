@@ -1,21 +1,31 @@
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useState } from "react";
 import AuthContext from "../contexts/auth.context";
 import { fetchProfile } from "../lib/services/auth";
-import { useQuery } from "@tanstack/react-query";
+import { ProfileResponse } from "../lib/services/auth/types";
 
 export default function AuthProvider({ children }: PropsWithChildren) {
-	const fetchProfileQuery = useQuery({
-		initialData: undefined,
-		queryKey: ["fetchProfile"],
-		queryFn: fetchProfile,
-		retry: 0,
-	});
+	const [profile, setProfile] = useState<ProfileResponse>();
+	const [isLoading, setIsLoading] = useState(false);
+
+	const refetchProfile = async () => {
+		setIsLoading(true);
+		try {
+			const data = await fetchProfile();
+			setProfile(data);
+		} catch (err) {
+			console.log("Failed to fetch profile", err);
+			setProfile(undefined);
+		}
+
+		setIsLoading(false);
+	};
 
 	return (
 		<AuthContext.Provider
 			value={{
-				profile: fetchProfileQuery.data,
-				refetchProfile: fetchProfileQuery.refetch,
+				profile,
+				refetchProfile,
+				isLoading,
 			}}
 		>
 			{children}
