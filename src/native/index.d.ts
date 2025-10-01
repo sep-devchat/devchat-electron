@@ -12,6 +12,8 @@ interface nativeAPI {
 	storeRefreshToken(token: string): Promise<void>;
 	getRefreshToken(): Promise<string>;
 	createAssetUrl(relPath: string): Promise<string>;
+	// registerSocketCallback(eventName: string, cb: (...args: any[]) => void): Promise<() => void>;
+	// sendSocketEvent: (eventName: string, ...args: any[]) => Promise<void>;
 }
 
 declare global {

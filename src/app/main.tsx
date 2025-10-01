@@ -6,6 +6,8 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import router from "./lib/router";
 import AuthProvider from "./components/AuthProvider";
 import { useAuth } from "./hooks/use-auth";
+import SocketProvider from "./components/SocketProvider";
+import socket from "@/app/lib/socket";
 
 const queryClient = new QueryClient();
 
@@ -25,7 +27,9 @@ function App() {
 	return (
 		<QueryClientProvider client={queryClient}>
 			<AuthProvider>
-				<InnerApp />
+				<SocketProvider socket={socket}>
+					<InnerApp />
+				</SocketProvider>
 			</AuthProvider>
 		</QueryClientProvider>
 	);

@@ -5,6 +5,7 @@ const store = new Store({
 		app: {
 			appBaseUrl: "https://devchat.online",
 			apiBaseUrl: "https://api.devchat.online",
+			socketUrl: "wss://api.devchat.online",
 		},
 		user: {
 			refreshToken: "",

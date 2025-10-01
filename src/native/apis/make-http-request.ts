@@ -7,7 +7,7 @@ import {
 	NativeAPIHandler,
 } from "../types";
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
-import store from "../../store";
+import store from "../store";
 
 const axiosInstance: AxiosInstance = axios.create({ timeout: 15000 });
 

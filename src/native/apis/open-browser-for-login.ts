@@ -1,7 +1,7 @@
 import { shell } from "electron";
 import { NativeAPIHandler } from "../types";
 import crypto from "crypto";
-import store from "../../store";
+import store from "../store";
 
 function generateCodeVerifier() {
 	// 43–128 recommended. 64 or 96 are common.
