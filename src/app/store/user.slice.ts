@@ -1,4 +1,4 @@
-import { Profile } from "@/services/auth/auth.type";
+import { Profile } from "@/app/lib/services/auth/types";
 import { createSlice } from "@reduxjs/toolkit";
 
 interface UserState {

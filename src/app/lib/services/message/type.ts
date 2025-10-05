@@ -1,4 +1,4 @@
-import { ProfileResponse } from "../auth/types";
+import { Profile } from "../auth/types";
 
 export interface MessageResponse {
 	id: string;
@@ -10,5 +10,5 @@ export interface MessageResponse {
 	createdAt: Date;
 	updatedAt: Date;
 	deletedAt: Date | null;
-	sender: ProfileResponse;
+	sender: Profile;
 }

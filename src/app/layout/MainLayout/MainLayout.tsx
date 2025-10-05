@@ -8,10 +8,11 @@ import GroupSidebar from "./GroupSidebar";
 import LeftSidebar from "./LeftSidebar";
 import Header from "./Header";
 import Profile from "./Profile";
+import AuthLayout from "@/app/components/AuthLayout";
 
 const MainLayout = () => {
 	return (
-		<>
+		<AuthLayout>
 			<MainBg />
 			<MainLayoutContainer className="px-4">
 				<TitleBar title="DevChat" icon={<User />} />
@@ -29,7 +30,7 @@ const MainLayout = () => {
 				</div>
 				<Profile />
 			</MainLayoutContainer>
-		</>
+		</AuthLayout>
 	);
 };
 

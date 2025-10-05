@@ -1,11 +1,11 @@
-import { PropsWithChildren, useState } from "react";
+import { PropsWithChildren, useEffect, useState } from "react";
 import AuthContext from "../contexts/auth.context";
 import { fetchProfile } from "../lib/services/auth";
-import { ProfileResponse } from "../lib/services/auth/types";
+import { Profile } from "../lib/services/auth/types";
 
 export default function AuthProvider({ children }: PropsWithChildren) {
-	const [profile, setProfile] = useState<ProfileResponse>();
-	const [isLoading, setIsLoading] = useState(false);
+	const [profile, setProfile] = useState<Profile>();
+	const [isLoading, setIsLoading] = useState(true);
 
 	const refetchProfile = async () => {
 		setIsLoading(true);
@@ -19,6 +19,10 @@ export default function AuthProvider({ children }: PropsWithChildren) {
 
 		setIsLoading(false);
 	};
+
+	useEffect(() => {
+		refetchProfile();
+	}, []);
 
 	return (
 		<AuthContext.Provider

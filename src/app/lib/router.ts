@@ -3,7 +3,7 @@ import { createMemoryHistory, createRouter } from "@tanstack/react-router";
 import { routeTree } from "../routeTree.gen";
 import type { AuthContextProps } from "../contexts/auth.context";
 
-const history = createMemoryHistory({ initialEntries: ["/user/channel"] });
+const history = createMemoryHistory();
 
 // Create a new router instance
 const router = createRouter({
