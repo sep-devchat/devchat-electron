@@ -1,8 +1,8 @@
 import { createContext } from "react";
-import { ProfileResponse } from "../lib/services/auth/types";
+import { Profile } from "../lib/services/auth/types";
 
 export interface AuthContextProps {
-	profile?: ProfileResponse;
+	profile?: Profile;
 	refetchProfile: () => Promise<void>;
 	isLoading: boolean;
 }

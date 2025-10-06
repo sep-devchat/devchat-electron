@@ -8,6 +8,8 @@ import AuthProvider from "./components/AuthProvider";
 import { useAuth } from "./hooks/use-auth";
 import SocketProvider from "./components/SocketProvider";
 import socket from "@/app/lib/socket";
+import { Provider as ReduxProvider } from "react-redux";
+import { store } from "./store";
 
 const queryClient = new QueryClient();
 
@@ -28,7 +30,9 @@ function App() {
 		<QueryClientProvider client={queryClient}>
 			<AuthProvider>
 				<SocketProvider socket={socket}>
-					<InnerApp />
+					<ReduxProvider store={store}>
+						<InnerApp />
+					</ReduxProvider>
 				</SocketProvider>
 			</AuthProvider>
 		</QueryClientProvider>

@@ -337,7 +337,7 @@ export const IconBtn = styled.button`
 	}
 `;
 
-export const Tooltip = styled.span<{ visible?: boolean }>`
+export const Tooltip = styled.span<{ $visible?: boolean }>`
 	position: absolute;
 	bottom: calc(100% + 8px);
 	left: 50%;
@@ -349,8 +349,8 @@ export const Tooltip = styled.span<{ visible?: boolean }>`
 	font-size: 12px;
 	white-space: nowrap;
 	pointer-events: none;
-	opacity: ${(p) => (p.visible ? 1 : 0)};
-	visibility: ${(p) => (p.visible ? "visible" : "hidden")};
+	opacity: ${(p) => (p.$visible ? 1 : 0)};
+	visibility: ${(p) => (p.$visible ? "visible" : "hidden")};
 	transition:
 		opacity 0.12s ease,
 		visibility 0.12s ease;

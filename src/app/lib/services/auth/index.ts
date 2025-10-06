@@ -1,7 +1,7 @@
 import fetch from "../../fetch";
 import {
 	PkceIssueTokenRequest,
-	ProfileResponse,
+	Profile,
 	RegisterFormValues,
 	TokenResponse,
 } from "./types";
@@ -17,7 +17,7 @@ export async function pkceIssueToken(dto: PkceIssueTokenRequest) {
 
 export async function fetchProfile() {
 	const url = `/api/auth/profile`;
-	return await fetch<ProfileResponse>({
+	return await fetch<Profile>({
 		url,
 		method: "GET",
 	});

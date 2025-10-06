@@ -222,7 +222,7 @@ export default function CenterPanel({
 							title="Channel"
 						>
 							<Hash />
-							<Tooltip visible={hoveredIcon === "hash"}>Channel</Tooltip>
+							<Tooltip $visible={hoveredIcon === "hash"}>Channel</Tooltip>
 						</IconBtn>
 					</CPHeaderIcon>
 					<CPTitle>
@@ -242,7 +242,7 @@ export default function CenterPanel({
 						onKeyDown={(e) => onIconKeyDown(e, "notifications")}
 					>
 						<Bell />
-						<Tooltip visible={hoveredIcon === "notifications"}>
+						<Tooltip $visible={hoveredIcon === "notifications"}>
 							Notifications
 						</Tooltip>
 					</IconBtn>
@@ -258,7 +258,7 @@ export default function CenterPanel({
 						onKeyDown={(e) => onIconKeyDown(e, "spool")}
 					>
 						<Spool />
-						<Tooltip visible={hoveredIcon === "spool"}>Spool</Tooltip>
+						<Tooltip $visible={hoveredIcon === "spool"}>Spool</Tooltip>
 					</IconBtn>
 
 					{/* SquareCode -> "code" */}
@@ -272,7 +272,7 @@ export default function CenterPanel({
 						onKeyDown={(e) => onIconKeyDown(e, "code")}
 					>
 						<SquareCode />
-						<Tooltip visible={hoveredIcon === "code"}>Code</Tooltip>
+						<Tooltip $visible={hoveredIcon === "code"}>Code</Tooltip>
 					</IconBtn>
 
 					{/* Users */}
@@ -286,7 +286,7 @@ export default function CenterPanel({
 						onKeyDown={(e) => onIconKeyDown(e, "users")}
 					>
 						<Users />
-						<Tooltip visible={hoveredIcon === "users"}>Members</Tooltip>
+						<Tooltip $visible={hoveredIcon === "users"}>Members</Tooltip>
 					</IconBtn>
 				</CPHeaderLeft>
 			</CPHeader>

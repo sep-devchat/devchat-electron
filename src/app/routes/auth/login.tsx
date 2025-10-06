@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { LogIn, UserPlus, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/app/hooks/use-auth";
+import { useSocket } from "@/app/hooks";
 
 interface DeepLinkPayload {
 	code: string;
@@ -29,14 +30,17 @@ function RouteComponent() {
 	const { refetchProfile } = useAuth();
 	const [codeVerifier, setCodeVerifier] = useState<string>("");
 	const [isOpening, setIsOpening] = useState<boolean>(false);
+	const { socket } = useSocket();
+
 	const loginPkceMutation = useMutation({
 		mutationFn: pkceIssueToken,
 		onSuccess: async (response) => {
 			window.localStorage.setItem("accessToken", response.accessToken);
 			window.nativeAPI.storeRefreshToken(response.refreshToken);
 			await refetchProfile();
+			socket.connect();
 			toast.success("Login successfully!");
-			navigate({ to: "/user/channel" });
+			navigate({ to: "/chat" });
 		},
 		onError: (error) => {
 			toast.error(`Login failed: ${error.message}`);
@@ -77,14 +81,14 @@ function RouteComponent() {
 					</div>
 				</CardContent>
 				<CardFooter className="flex gap-2 justify-end">
-					<Button
+					{/* <Button
 						variant="outline"
 						onClick={() => {
-							navigate({ to: "/auth/register" });
+							window.location.href = "https://devchat.online/auth/register";
 						}}
 					>
 						<UserPlus className="size-4" /> Sign Up
-					</Button>
+					</Button> */}
 					<Button
 						onClick={async () => {
 							try {

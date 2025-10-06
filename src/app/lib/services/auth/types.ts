@@ -11,7 +11,7 @@ export interface TokenResponse {
 	refreshToken: string;
 }
 
-export interface ProfileResponse {
+export interface Profile {
 	id: string;
 	username: string;
 	email: string;

@@ -15,7 +15,7 @@ export default function SocketProvider({
 		const handleConnect = () => {
 			console.log("Socket connected:", socket.id);
 			socket.emit(SocketEvents.AUTHENTICATE, {
-				token: localStorage.getItem("accessToken"),
+				token: localStorage.getItem("accessToken") || "",
 			});
 		};
 
