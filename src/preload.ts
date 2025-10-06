@@ -8,6 +8,10 @@ const nativeAPINames = [
 	"openBrowserForLogin",
 	"storeRefreshToken",
 	"createAssetUrl",
+	"selectFileOrFolder",
+	"runCodeByFilePath",
+	"runCodeByContent",
+	"readFileContent",
 ];
 
 type NativeApiInvoker = Record<

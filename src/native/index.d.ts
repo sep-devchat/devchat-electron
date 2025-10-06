@@ -14,6 +14,10 @@ interface nativeAPI {
 	createAssetUrl(relPath: string): Promise<string>;
 	// registerSocketCallback(eventName: string, cb: (...args: any[]) => void): Promise<() => void>;
 	// sendSocketEvent: (eventName: string, ...args: any[]) => Promise<void>;
+	selectFileOrFolder(folder?: boolean): Promise<string[]>;
+	readFileContent(filePath: string): Promise<string>;
+	runCodeByFilePath(filePath: string): Promise<string>;
+	runCodeByContent(content: string): Promise<string>;
 }
 
 declare global {
