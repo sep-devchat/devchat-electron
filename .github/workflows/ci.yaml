@@ -1,0 +1,26 @@
+name: Beye CI
+on:
+  push:
+    branches:
+      - release
+
+  workflow_dispatch:
+
+env:
+  REPO_ID: electron-markdown
+  GITHUB_TOKEN: ${{ secrets.SECRET_GITHUB_TOKEN }}
+
+jobs:
+  build-on-win:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout to repo
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+      - name: Install dependencies
+        run: yarn
+      - name: Build and publish
+        run: yarn run publish
