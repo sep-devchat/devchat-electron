@@ -1,3 +1,13 @@
+import { updateElectronApp, UpdateSourceType } from "update-electron-app";
+
+updateElectronApp({
+	updateSource: {
+		type: UpdateSourceType.ElectronPublicUpdateService,
+		repo: "sep-devchat/devchat-electron",
+	},
+	updateInterval: "1 hour",
+});
+
 import { app, BrowserWindow, ipcMain } from "electron";
 import path from "node:path";
 import started from "electron-squirrel-startup";
