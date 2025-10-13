@@ -1,6 +1,7 @@
 import Dockerode from "dockerode";
 import fs from "fs";
 import path from "path";
+import { app } from "electron";
 
 export class Docker {
 	private static instance: Docker;
@@ -10,7 +11,7 @@ export class Docker {
 	}
 
 	readonly dockerode: Dockerode;
-	readonly codeExecutionDir = path.join(process.cwd(), "code-execution-tmp");
+	readonly codeExecutionDir = path.join(app.getAppPath(), "code-execution-tmp");
 	readonly containerWorkingDir = "/app";
 	private constructor() {
 		this.dockerode = new Dockerode();
