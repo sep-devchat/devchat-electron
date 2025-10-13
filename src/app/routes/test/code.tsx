@@ -7,7 +7,7 @@ import {
 import { Spinner } from "@/app/components/ui/spinner";
 import { createFileRoute } from "@tanstack/react-router";
 import { useRef, useState } from "react";
-import Editor, { useMonaco } from "@monaco-editor/react";
+import Editor from "@monaco-editor/react";
 import { editor } from "monaco-editor";
 import {
 	Select,
@@ -24,48 +24,36 @@ const runCodeEnvOptions = [
 	{ label: "Remote", value: "remote" },
 ];
 
+const languageOptions = [
+	{ label: "JavaScript", value: ProgrammingLanguageEnum.JAVASCRIPT },
+	{ label: "Java", value: ProgrammingLanguageEnum.JAVA },
+	{ label: "Python", value: ProgrammingLanguageEnum.PYTHON },
+];
+
 export const Route = createFileRoute("/test/code")({
 	component: RouteComponent,
 });
 
 function RouteComponent() {
-	const [selectedFilePath, setSelectedFilePath] = useState<string>("");
 	const [selectedEnv, setSelectedEnv] = useState<string>(
 		runCodeEnvOptions[0].value,
 	);
+	const [selectedLanguage, setSelectedLanguage] = useState(
+		languageOptions[0].value,
+	);
 	const [result, setResult] = useState<string>("");
 	const [isRunning, setIsRunning] = useState<boolean>(false);
-	const monaco = useMonaco();
 	const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
-
-	const handleSelectFile = async () => {
-		const filePaths = await window.nativeAPI.selectFileOrFolder(false);
-		if (filePaths.length > 0) {
-			setSelectedFilePath(filePaths[0]);
-			if (!monaco || !editorRef.current) return;
-			const model = monaco.editor.getModel(monaco.Uri.file(filePaths[0]));
-			if (model) {
-				editorRef.current.setModel(model);
-			} else {
-				const text = await window.nativeAPI.readFileContent(filePaths[0]);
-				const newModel = monaco.editor.createModel(
-					text,
-					"javascript",
-					monaco.Uri.file(filePaths[0]),
-				);
-				editorRef.current.setModel(newModel);
-			}
-		}
-	};
 
 	const handleRunCodeLocal = async () => {
 		if (editorRef.current && editorRef.current.getValue()) {
 			setIsRunning(true);
 			try {
 				const res = await window.nativeAPI.runCodeByContent(
+					selectedLanguage,
 					editorRef.current.getValue(),
 				);
-				setResult(res);
+				setResult(res.output);
 			} catch (err) {
 				console.error(err);
 				setResult(`Error: ${err.message ? err.message : "Unknown error"}`);
@@ -80,7 +68,7 @@ function RouteComponent() {
 			try {
 				const res = await runCode({
 					code: editorRef.current.getValue(),
-					language: ProgrammingLanguageEnum.JAVASCRIPT,
+					language: selectedLanguage,
 				});
 				setResult(res.output);
 			} catch (err) {
@@ -102,9 +90,9 @@ function RouteComponent() {
 	return (
 		<div className="h-screen flex flex-col">
 			<div className="p-3 flex flex-row gap-x-2 border-b">
-				<Button onClick={handleSelectFile} variant="outline">
+				{/* <Button onClick={handleSelectFile} variant="outline">
 					Select File
-				</Button>
+				</Button> */}
 				<Select value={selectedEnv} onValueChange={setSelectedEnv}>
 					<SelectTrigger>
 						<SelectValue placeholder="Select Environment" />
@@ -117,8 +105,25 @@ function RouteComponent() {
 						))}
 					</SelectContent>
 				</Select>
+				<Select
+					value={selectedLanguage}
+					onValueChange={(v) =>
+						setSelectedLanguage(v as ProgrammingLanguageEnum)
+					}
+				>
+					<SelectTrigger>
+						<SelectValue placeholder="Select Language" />
+					</SelectTrigger>
+					<SelectContent>
+						{languageOptions.map((option) => (
+							<SelectItem key={option.value} value={option.value}>
+								{option.label}
+							</SelectItem>
+						))}
+					</SelectContent>
+				</Select>
 				<Button onClick={handleRunCode} disabled={isRunning}>
-					Run Code (Javascript) {isRunning && <Spinner />}
+					Run Code ({selectedLanguage}) {isRunning && <Spinner />}
 				</Button>
 			</div>
 			<ResizablePanelGroup direction="horizontal" className="flex-1">
@@ -130,7 +135,7 @@ function RouteComponent() {
 						width="100%"
 						height="100%"
 						onMount={(editor) => (editorRef.current = editor)}
-						language="javascript"
+						language={selectedLanguage}
 					/>
 				</ResizablePanel>
 				<ResizableHandle />

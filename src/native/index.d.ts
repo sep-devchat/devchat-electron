@@ -1,3 +1,4 @@
+import { CodeExecutionResult } from "./apis/code-execution";
 import { MakeHttpRequestParams, MakeHttpRequestResult } from "./types";
 
 interface nativeAPI {
@@ -17,7 +18,10 @@ interface nativeAPI {
 	selectFileOrFolder(folder?: boolean): Promise<string[]>;
 	readFileContent(filePath: string): Promise<string>;
 	runCodeByFilePath(filePath: string): Promise<string>;
-	runCodeByContent(content: string): Promise<string>;
+	runCodeByContent(
+		language: string,
+		content: string,
+	): Promise<CodeExecutionResult>;
 }
 
 declare global {
